@@ -78,7 +78,6 @@
       <el-table-column label="优惠名称" align="center" prop="disName" />
       <el-table-column label="活动简介" align="center" prop="disBrief" />
       <el-table-column label="折扣" align="center" prop="disRu" />
-      <el-table-column label="图片" align="center" prop="disPhoto" />
       <el-table-column label="生效时间" align="center" prop="impDate" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.impDate, '{y}-{m}-{d}') }}</span>

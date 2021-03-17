@@ -93,8 +93,8 @@
     <el-table v-loading="loading" :data="stuinfoList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="学员姓名" align="center" prop="stuName" />
-      <el-table-column label="性别" align="center" prop="sex" :formatter="sexFormat" />
-      <el-table-column label="申请车型" align="center" prop="appCarType" />
+      <el-table-column label="性别" align="center" prop="sex" :formatter="sexFormat" width="50"/>
+      <el-table-column label="申请车型" align="center" prop="driveTypeList.driverName" />
       <el-table-column label="地址" align="center" prop="addr" />
       <el-table-column label="状态" align="center" prop="statusCd" :formatter="statusCdFormat" />
       <el-table-column label="报名时间" align="center" prop="impDate" width="180">
@@ -102,8 +102,8 @@
           <span>{{ parseTime(scope.row.impDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="教员编号" align="center" prop="coachInfoId" />
-      <el-table-column label="所属团体" align="center" prop="groupUserId" />
+      <el-table-column label="教员编号" align="center" prop="coachInfoList.chName" />
+      <el-table-column label="所属团体" align="center" prop="groupUserList.groupName" />
       <el-table-column label="申请状态" align="center" prop="appStatus" :formatter="appStatusFormat" />
       <el-table-column label="处理时间" align="center" prop="appStatusTime" width="180">
         <template slot-scope="scope">
@@ -157,13 +157,21 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="准驾车型" prop="chCarType">
-          <el-select v-model="form.chCarType" placeholder="请选择准驾车型">
-            <el-option label="请选择字典生成" value="" />
+          <el-select v-model="form.chCarType" placeholder="请选择准驾车型" clearable size="small">
+            <el-option v-for="item in driverTypeOptions"
+                       :label="item.driverName"
+                       :value="item.driveTypeId"
+                       :key="item.driveTypeId"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="申请车型" prop="appCarType">
           <el-select v-model="form.appCarType" placeholder="请选择申请车型">
-            <el-option label="请选择字典生成" value="" />
+            <el-option v-for="item in driverTypeOptions"
+                        :label="item.driverName"
+                        :value="item.driveTypeId"
+                        :key="item.driveTypeId"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="右眼视力" prop="rigthEye">
@@ -187,27 +195,23 @@
             >{{dict.dictLabel}}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="报名时间" prop="impDate">
-          <el-date-picker clearable size="small"
-                          v-model="form.impDate"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="选择报名时间">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="毕业时间" prop="expDate">
-          <el-date-picker clearable size="small"
-                          v-model="form.expDate"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="选择毕业时间">
-          </el-date-picker>
-        </el-form-item>
         <el-form-item label="教员编号" prop="coachInfoId">
-          <el-input v-model="form.coachInfoId" placeholder="请输入教员编号" />
+          <el-select v-model="form.coachInfoId" placeholder="请选择教员" clearable size="small">
+            <el-option v-for="item in coachIdOptions"
+                       :label="item.chName"
+                       :value="item.coachInfoId"
+                       :key="item.coachInfoId"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="所属驾校" prop="deptId">
-          <el-input v-model="form.deptId" placeholder="请输入所属驾校" />
+          <el-select v-model="form.deptId" placeholder="请选择教员" clearable size="small">
+            <el-option v-for="item in deptIdOptions"
+                       :label="item.deptName"
+                       :value="item.deptId"
+                       :key="item.deptId"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="是否本地户口" prop="isLocal">
           <el-radio-group v-model="form.isLocal">
@@ -228,7 +232,13 @@
           <imageUpload v-model="form.fCard"/>
         </el-form-item>
         <el-form-item label="所属团体" prop="groupUserId">
-          <el-input v-model="form.groupUserId" placeholder="请输入所属团体" />
+          <el-select v-model="form.groupUserId" placeholder="请选择所属团体" clearable size="small">
+            <el-option v-for="item in groupUserOptions"
+                       :label="item.groupName"
+                       :value="item.groupUserId"
+                       :key="item.groupUserId"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="申请状态">
           <el-radio-group v-model="form.appStatus">
@@ -239,13 +249,14 @@
             >{{dict.dictLabel}}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="处理时间" prop="appStatusTime">
-          <el-date-picker clearable size="small"
-                          v-model="form.appStatusTime"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="选择处理时间">
-          </el-date-picker>
+        <el-form-item label="所属用户" prop="userId">
+          <el-select v-model="form.userId" placeholder="请选择用户" clearable size="small">
+            <el-option v-for="item in userIdOptions"
+                       :label="item.userName"
+                       :value="item.userId"
+                       :key="item.userId"
+            ></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -260,6 +271,10 @@
 import { listStuinfo, getStuinfo, delStuinfo, addStuinfo, updateStuinfo, exportStuinfo } from "@/api/jiaktb/stuinfo";
 import ImageUpload from '@/components/ImageUpload';
 import { listType } from "@/api/jiaktb/type";
+import { listGroupuser } from "@/api/jiaktb/groupuser";
+import { listCoachinfo } from "@/api/jiaktb/coachinfo";
+import { listDept } from "@/api/system/dept";
+import { listUser } from "@/api/system/user";
 
 export default {
   name: "Stuinfo",
@@ -293,6 +308,11 @@ export default {
       // 申请状态字典
       appStatusOptions: [],
       isLocalOptions: [],
+      driverTypeOptions: [],
+      coachIdOptions: [],
+      userIdOptions: [],
+      groupUserOptions: [],
+      deptIdOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -322,6 +342,22 @@ export default {
     });
     this.getDicts("is_local").then(response => {
       this.isLocalOptions = response.data;
+    });
+
+    listType().then(response => {
+      this.driverTypeOptions = response.rows;
+    });
+    listDept().then(response => {
+      this.deptIdOptions = response.data;
+    });
+    listGroupuser().then(response => {
+      this.groupUserOptions = response.rows;
+    });
+    listCoachinfo().then(response => {
+      this.coachIdOptions = response.rows;
+    });
+    listUser().then(response => {
+      this.userIdOptions = response.rows;
     });
   },
   methods: {

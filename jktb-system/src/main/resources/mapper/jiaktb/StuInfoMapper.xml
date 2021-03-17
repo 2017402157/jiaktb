@@ -27,10 +27,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="groupUserId"    column="group_user_id"    />
         <result property="appStatus"    column="app_status"    />
         <result property="appStatusTime"    column="app_status_time"    />
+        <result property="userId"       column="user_id" />
     </resultMap>
 
     <sql id="selectStuInfoVo">
-        select stu_info_id, stu_name, card_id, sex, ch_car_type, app_car_type, rigth_eye, left_eye, addr, phone, status_cd, imp_date, exp_date, coach_info_id, dept_id, is_local, prove, z_card, f_card, group_user_id, app_status, app_status_time from stu_info
+        select stu_info_id, stu_name, card_id, sex, ch_car_type, app_car_type, rigth_eye, left_eye, addr, phone, status_cd, imp_date, exp_date, coach_info_id, dept_id, is_local, prove, z_card, f_card, group_user_id, app_status, app_status_time, user_id from stu_info
     </sql>
 
     <select id="selectStuInfoList" parameterType="StuInfo" resultMap="StuInfoResult">
@@ -61,8 +62,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addr != null">addr,</if>
             <if test="phone != null">phone,</if>
             <if test="statusCd != null">status_cd,</if>
-            <if test="impDate != null">imp_date,</if>
-            <if test="expDate != null">exp_date,</if>
+            <if test="stuName != null">imp_date,</if>
+            <if test="stuName != null">exp_date,</if>
             <if test="coachInfoId != null">coach_info_id,</if>
             <if test="deptId != null">dept_id,</if>
             <if test="isLocal != null">is_local,</if>
@@ -72,6 +73,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="groupUserId != null">group_user_id,</if>
             <if test="appStatus != null">app_status,</if>
             <if test="appStatusTime != null">app_status_time,</if>
+            <if test="userId != null">user_id,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="stuName != null">#{stuName},</if>
@@ -84,8 +86,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="addr != null">#{addr},</if>
             <if test="phone != null">#{phone},</if>
             <if test="statusCd != null">#{statusCd},</if>
-            <if test="impDate != null">#{impDate},</if>
-            <if test="expDate != null">#{expDate},</if>
+            <if test="stuName != null">sysdate(),</if>
+            <if test="stuName != null">sysdate() + interval 3 year ,</if>
             <if test="coachInfoId != null">#{coachInfoId},</if>
             <if test="deptId != null">#{deptId},</if>
             <if test="isLocal != null">#{isLocal},</if>
@@ -95,6 +97,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="groupUserId != null">#{groupUserId},</if>
             <if test="appStatus != null">#{appStatus},</if>
             <if test="appStatusTime != null">#{appStatusTime},</if>
+            <if test="userId != null">#{userId},</if>
          </trim>
     </insert>
 
@@ -122,6 +125,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="groupUserId != null">group_user_id = #{groupUserId},</if>
             <if test="appStatus != null">app_status = #{appStatus},</if>
             <if test="appStatusTime != null">app_status_time = #{appStatusTime},</if>
+            <if test="userId != null">user_id = #{userId},</if>
         </trim>
         where stu_info_id = #{stuInfoId}
     </update>

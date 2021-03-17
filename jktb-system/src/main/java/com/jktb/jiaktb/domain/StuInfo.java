@@ -2,6 +2,8 @@ package com.jktb.jiaktb.domain;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jktb.common.core.domain.entity.SysDept;
+import com.jktb.common.core.domain.entity.SysUser;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.jktb.common.annotation.Excel;
@@ -72,11 +74,11 @@ public class StuInfo extends BaseEntity
 
     /** 教员编号 */
     @Excel(name = "教员编号")
-    private String coachInfoId;
+    private Long coachInfoId;
 
     /** 所属驾校 */
     @Excel(name = "所属驾校")
-    private String deptId;
+    private Long deptId;
 
     /** 是否是本地户口(1000是，1100否) */
     @Excel(name = "是否是本地户口(1000是，1100否)")
@@ -103,9 +105,17 @@ public class StuInfo extends BaseEntity
     private String appStatus;
 
     /** 处理时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     @Excel(name = "处理时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date appStatusTime;
+
+    private Long userId;
+
+    private SysUser userList;
+    private DriveType driveTypeList;
+    private GroupUser groupUserList;
+    private SysDept deptList;
+    private CoachInfo coachInfoList;
 
     public void setStuInfoId(Long stuInfoId) 
     {
@@ -224,21 +234,21 @@ public class StuInfo extends BaseEntity
     {
         return expDate;
     }
-    public void setCoachInfoId(String coachInfoId) 
+    public void setCoachInfoId(Long coachInfoId)
     {
         this.coachInfoId = coachInfoId;
     }
 
-    public String getCoachInfoId() 
+    public Long getCoachInfoId()
     {
         return coachInfoId;
     }
-    public void setDeptId(String deptId) 
+    public void setDeptId(String Long)
     {
         this.deptId = deptId;
     }
 
-    public String getDeptId() 
+    public Long getDeptId()
     {
         return deptId;
     }
@@ -306,6 +316,54 @@ public class StuInfo extends BaseEntity
         return appStatusTime;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public SysUser getUserList() {
+        return userList;
+    }
+
+    public void setUserList(SysUser userList) {
+        this.userList = userList;
+    }
+
+    public DriveType getDriveTypeList() {
+        return driveTypeList;
+    }
+
+    public void setDriveTypeList(DriveType driveTypeList) {
+        this.driveTypeList = driveTypeList;
+    }
+
+    public GroupUser getGroupUserList() {
+        return groupUserList;
+    }
+
+    public void setGroupUserList(GroupUser groupUserList) {
+        this.groupUserList = groupUserList;
+    }
+
+    public SysDept getDeptList() {
+        return deptList;
+    }
+
+    public void setDeptList(SysDept deptList) {
+        this.deptList = deptList;
+    }
+
+    public CoachInfo getCoachInfoList() {
+        return coachInfoList;
+    }
+
+    public void setCoachInfoList(CoachInfo coachInfoList) {
+        this.coachInfoList = coachInfoList;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -331,6 +389,7 @@ public class StuInfo extends BaseEntity
             .append("groupUserId", getGroupUserId())
             .append("appStatus", getAppStatus())
             .append("appStatusTime", getAppStatusTime())
+            .append("userId", getUserId())
             .toString();
     }
 }

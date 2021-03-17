@@ -1,5 +1,6 @@
 package com.jktb.jiaktb.controller;
 
+import java.util.Date;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,7 @@ public class GroupUserController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody GroupUser groupUser)
     {
+        groupUser.setInitDate(new Date());
         return toAjax(groupUserService.insertGroupUser(groupUser));
     }
 

@@ -78,13 +78,13 @@
       <el-table-column label="团体名称" align="center" prop="groupName" />
       <el-table-column label="创建时间" align="center" prop="initDate" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.initDate, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.initDate) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center" prop="status" :formatter="statusFormat" />
       <el-table-column label="结束时间" align="center" prop="effDate" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.effDate, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.effDate) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -120,14 +120,6 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="团体名称" prop="groupName">
           <el-input v-model="form.groupName" placeholder="请输入团体名称" />
-        </el-form-item>
-        <el-form-item label="创建时间" prop="initDate">
-          <el-date-picker clearable size="small"
-                          v-model="form.initDate"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="选择创建时间">
-          </el-date-picker>
         </el-form-item>
         <el-form-item label="状态">
           <el-radio-group v-model="form.status">

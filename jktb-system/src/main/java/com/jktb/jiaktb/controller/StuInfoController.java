@@ -1,6 +1,15 @@
 package com.jktb.jiaktb.controller;
 
+import java.util.Date;
 import java.util.List;
+
+import com.jktb.common.utils.SecurityUtils;
+import com.jktb.common.utils.spring.SpringUtils;
+import com.jktb.jiaktb.service.ICoachInfoService;
+import com.jktb.jiaktb.service.IDriveTypeService;
+import com.jktb.jiaktb.service.IGroupUserService;
+import com.jktb.system.service.ISysDeptService;
+import com.jktb.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +41,16 @@ public class StuInfoController extends BaseController
 {
     @Autowired
     private IStuInfoService stuInfoService;
+    @Autowired
+    private ISysUserService userService;
+    @Autowired
+    private ICoachInfoService coachInfoService;
+    @Autowired
+    private IDriveTypeService driveTypeService;
+    @Autowired
+    private ISysDeptService deptService;
+    @Autowired
+    private IGroupUserService groupUserService;
 
     /**
      * 查询学员信息列表
@@ -42,6 +61,11 @@ public class StuInfoController extends BaseController
     {
         startPage();
         List<StuInfo> list = stuInfoService.selectStuInfoList(stuInfo);
+        for (StuInfo data : list) {
+            data.setCoachInfoList(coachInfoService.selectCoachInfoById(data.getCoachInfoId()));
+            data.setGroupUserList(groupUserService.selectGroupUserById(data.getGroupUserId()));
+            data.setDriveTypeList(driveTypeService.selectDriveTypeById(data.getAppCarType()));
+        }
         return getDataTable(list);
     }
 
@@ -76,6 +100,12 @@ public class StuInfoController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody StuInfo stuInfo)
     {
+        if (SecurityUtils.isAdmin(SecurityUtils.getLoginUser().getUser().getUserId())) {
+            stuInfo.setAppStatus("1100");
+            stuInfo.setAppStatusTime(new Date());
+        } else {
+            stuInfo.setAppStatus("1000");
+        }
         return toAjax(stuInfoService.insertStuInfo(stuInfo));
     }
 
@@ -87,6 +117,13 @@ public class StuInfoController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody StuInfo stuInfo)
     {
+        StuInfo info = stuInfoService.selectStuInfoById(stuInfo.getStuInfoId());
+        if (!info.getAppStatus().equals(stuInfo.getAppStatus())) {
+            stuInfo.setAppStatusTime(new Date());
+        }
+        if (info.getStatusCd() == 1100L ) {
+            stuInfo.setExpDate(new Date());
+        }
         return toAjax(stuInfoService.updateStuInfo(stuInfo));
     }
 
