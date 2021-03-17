@@ -2,6 +2,8 @@ package com.jktb.jiaktb.domain;
 
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jktb.common.core.domain.entity.SysDept;
+import com.jktb.common.core.domain.entity.SysUser;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.jktb.common.annotation.Excel;
@@ -68,6 +70,12 @@ public class CoachInfo extends BaseEntity
 
     /** 用户id */
     private Long userId;
+
+    private SysDept deptList;
+
+    private SysUser userList;
+
+    private DriveType driveTypeList;
 
     public void setCoachInfoId(Long coachInfoId) 
     {
@@ -203,6 +211,30 @@ public class CoachInfo extends BaseEntity
     public Long getUserId() 
     {
         return userId;
+    }
+
+    public SysDept getDeptList() {
+        return deptList;
+    }
+
+    public void setDeptList(SysDept deptList) {
+        this.deptList = deptList;
+    }
+
+    public SysUser getUserList() {
+        return userList;
+    }
+
+    public void setUserList(SysUser userList) {
+        this.userList = userList;
+    }
+
+    public DriveType getDriveTypeList() {
+        return driveTypeList;
+    }
+
+    public void setDriveTypeList(DriveType driveTypeList) {
+        this.driveTypeList = driveTypeList;
     }
 
     @Override

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jktb.jiaktb.mapper.GroupUserMapper">
+    
+    <resultMap type="GroupUser" id="GroupUserResult">
+        <result property="groupUserId"    column="group_user_id"    />
+        <result property="groupName"    column="group_name"    />
+        <result property="initDate"    column="init_date"    />
+        <result property="status"    column="status"    />
+        <result property="effDate"    column="eff_date"    />
+    </resultMap>
+
+    <sql id="selectGroupUserVo">
+        select group_user_id, group_name, init_date, status, eff_date from group_user
+    </sql>
+
+    <select id="selectGroupUserList" parameterType="GroupUser" resultMap="GroupUserResult">
+        <include refid="selectGroupUserVo"/>
+        <where>  
+            <if test="groupName != null  and groupName != ''"> and group_name like concat('%', #{groupName}, '%')</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectGroupUserById" parameterType="Long" resultMap="GroupUserResult">
+        <include refid="selectGroupUserVo"/>
+        where group_user_id = #{groupUserId}
+    </select>
+        
+    <insert id="insertGroupUser" parameterType="GroupUser" useGeneratedKeys="true" keyProperty="groupUserId">
+        insert into group_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="groupName != null">group_name,</if>
+            <if test="initDate != null">init_date,</if>
+            <if test="status != null">status,</if>
+            <if test="effDate != null">eff_date,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="groupName != null">#{groupName},</if>
+            <if test="initDate != null">#{initDate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="effDate != null">#{effDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateGroupUser" parameterType="GroupUser">
+        update group_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="groupName != null">group_name = #{groupName},</if>
+            <if test="initDate != null">init_date = #{initDate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="effDate != null">eff_date = #{effDate},</if>
+        </trim>
+        where group_user_id = #{groupUserId}
+    </update>
+
+    <delete id="deleteGroupUserById" parameterType="Long">
+        delete from group_user where group_user_id = #{groupUserId}
+    </delete>
+
+    <delete id="deleteGroupUserByIds" parameterType="String">
+        delete from group_user where group_user_id in 
+        <foreach item="groupUserId" collection="array" open="(" separator="," close=")">
+            #{groupUserId}
+        </foreach>
+    </delete>
+</mapper>

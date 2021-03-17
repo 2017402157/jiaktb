@@ -74,10 +74,10 @@
     <el-table v-loading="loading" :data="costList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="成绩标识" align="center" prop="costId" />
-      <el-table-column label="学员ID" align="center" prop="carInfoId" />
+      <el-table-column label="学员" align="center" prop="stuInfoList.stuName" />
       <el-table-column label="科目名称" align="center" prop="costName" />
       <el-table-column label="费用" align="center" prop="costNum" />
-      <el-table-column label="优惠标识" align="center" prop="discount" />
+      <el-table-column label="优惠标识" align="center" prop="disRuleList.disName" />
       <el-table-column label="优惠后费用" align="center" prop="feeCostNum" />
       <el-table-column label="备注" align="center" prop="remarks" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -112,7 +112,13 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="学员ID" prop="carInfoId">
-          <el-input v-model="form.carInfoId" placeholder="请输入学员ID" />
+          <el-select v-model="form.carInfoId" placeholder="请选择学员" clearable size="small">
+            <el-option v-for="item in stuinfoOptions"
+                       :value="item.stuInfoId"
+                       :label="item.stuName"
+                       :key="item.stuInfoId"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="科目名称" prop="costName">
           <el-input v-model="form.costName" placeholder="请输入科目名称" />
@@ -121,7 +127,13 @@
           <el-input v-model="form.costNum" placeholder="请输入费用" />
         </el-form-item>
         <el-form-item label="优惠标识" prop="discount">
-          <el-input v-model="form.discount" placeholder="请输入优惠标识" />
+          <el-select v-model="form.discount" placeholder="请选择优惠活动" clearable size="small">
+            <el-option v-for="item in rulesOptions"
+                       :label="item.disName"
+                       :value="item.disRuleId"
+                       :key="item.disRuleId"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="优惠后费用" prop="feeCostNum">
           <el-input v-model="form.feeCostNum" placeholder="请输入优惠后费用" />
@@ -140,6 +152,8 @@
 
 <script>
 import { listCost, getCost, delCost, addCost, updateCost, exportCost } from "@/api/jiaktb/cost";
+import { listStuinfo } from "@/api/jiaktb/stuinfo";
+import { listRule} from "@/api/jiaktb/rule";
 
 export default {
   name: "Cost",
@@ -151,6 +165,8 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
+      stuinfoOptions: [],
+      rulesOptions: [],
       // 非单个禁用
       single: true,
       // 非多个禁用
@@ -181,6 +197,12 @@ export default {
   },
   created() {
     this.getList();
+    listStuinfo().then(response => {
+      this.stuinfoOptions = response.rows;
+    });
+    listRule().then(response => {
+      this.rulesOptions = response.rows;
+    });
   },
   methods: {
     /** 查询学费明细列表 */

@@ -42,6 +42,10 @@ public class Cost extends BaseEntity
     @Excel(name = "备注")
     private String remarks;
 
+    private StuInfo stuInfoList;
+
+    private DisRule disRuleList;
+
     public void setCostId(Long costId) 
     {
         this.costId = costId;
@@ -104,6 +108,22 @@ public class Cost extends BaseEntity
     public String getRemarks() 
     {
         return remarks;
+    }
+
+    public StuInfo getStuInfoList() {
+        return stuInfoList;
+    }
+
+    public void setStuInfoList(StuInfo stuInfoList) {
+        this.stuInfoList = stuInfoList;
+    }
+
+    public DisRule getDisRuleList() {
+        return disRuleList;
+    }
+
+    public void setDisRuleList(DisRule disRuleList) {
+        this.disRuleList = disRuleList;
     }
 
     @Override

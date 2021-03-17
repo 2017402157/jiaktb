@@ -1,19 +1,10 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="车辆类型" prop="carType">
-        <el-select v-model="queryParams.carType" placeholder="请选择车辆类型" clearable size="small">
-          <el-option v-for="item in driverTypeOptions"
-                     :key="item.driveTypeId"
-                     :label="item.driverName"
-                     :value="item.driveTypeId"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="车牌号" prop="carNum">
+      <el-form-item label="团体名称" prop="groupName">
         <el-input
-          v-model="queryParams.carNum"
-          placeholder="请输入车牌号"
+          v-model="queryParams.groupName"
+          placeholder="请输入团体名称"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
@@ -43,7 +34,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['jiaktb:carinfo:add']"
+          v-hasPermi="['jiaktb:groupuser:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -54,7 +45,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['jiaktb:carinfo:edit']"
+          v-hasPermi="['jiaktb:groupuser:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -65,7 +56,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['jiaktb:carinfo:remove']"
+          v-hasPermi="['jiaktb:groupuser:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -75,21 +66,27 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['jiaktb:carinfo:export']"
+          v-hasPermi="['jiaktb:groupuser:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="carinfoList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="groupuserList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="车辆标识" align="center" prop="carInfoId" />
-      <el-table-column label="车辆类型" align="center" prop="driveTypeList.driverCode" />
-      <el-table-column label="车牌号" align="center" prop="carNum" />
+      <el-table-column label="团体标识" align="center" prop="groupUserId" />
+      <el-table-column label="团体名称" align="center" prop="groupName" />
+      <el-table-column label="创建时间" align="center" prop="initDate" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.initDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center" prop="status" :formatter="statusFormat" />
-      <el-table-column label="所属教练" align="center" prop="coachInfoList.chName" />
-      <el-table-column label="购入价格" align="center" prop="carValue" />
-      <el-table-column label="用车总人数" align="center" prop="num" />
+      <el-table-column label="结束时间" align="center" prop="effDate" width="180">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.effDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -97,14 +94,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['jiaktb:carinfo:edit']"
+            v-hasPermi="['jiaktb:groupuser:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['jiaktb:carinfo:remove']"
+            v-hasPermi="['jiaktb:groupuser:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -118,27 +115,18 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改车辆信息对话框 -->
+    <!-- 添加或修改团体信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="车辆类型" prop="carType">
-          <el-select v-model="form.carType" placeholder="请选择车辆类型" clearable size="small">
-            <el-option v-for="item in driverTypeOptions"
-                       :key="item.driveTypeId"
-                       :label="item.driverName"
-                       :value="item.driveTypeId"
-            />
-          </el-select>
+        <el-form-item label="团体名称" prop="groupName">
+          <el-input v-model="form.groupName" placeholder="请输入团体名称" />
         </el-form-item>
-        <el-form-item label="车牌号" prop="carNum">
-          <el-input v-model="form.carNum" placeholder="请输入车牌号" />
-        </el-form-item>
-        <el-form-item label="录入时间" prop="impDate">
+        <el-form-item label="创建时间" prop="initDate">
           <el-date-picker clearable size="small"
-                          v-model="form.impDate"
+                          v-model="form.initDate"
                           type="date"
                           value-format="yyyy-MM-dd"
-                          placeholder="选择录入时间">
+                          placeholder="选择创建时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="状态">
@@ -150,19 +138,13 @@
             >{{dict.dictLabel}}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="所属教练" prop="coachInfoId">
-          <el-select v-model="form.coachInfoId" placeholder="请选择教练" clearable size="small">
-            <el-option v-for="item in coachOptions"
-                       :label="item.chName"
-                       :value="item.coachInfoId"
-                       :key="item.coachInfoId"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="购入价格" prop="carValue">
-          <el-input v-model="form.carValue" placeholder="请输入购入价格" />
-        </el-form-item>
-        <el-form-item label="用车总人数" prop="num">
-          <el-input v-model="form.num" placeholder="请输入用车总人数" />
+        <el-form-item label="结束时间" prop="effDate">
+          <el-date-picker clearable size="small"
+                          v-model="form.effDate"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="选择结束时间">
+          </el-date-picker>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -174,12 +156,10 @@
 </template>
 
 <script>
-import { listCarinfo, getCarinfo, delCarinfo, addCarinfo, updateCarinfo, exportCarinfo } from "@/api/jiaktb/carinfo";
-import { listType } from "@/api/jiaktb/type";
-import { listCoachinfo} from "@/api/jiaktb/coachinfo";
+import { listGroupuser, getGroupuser, delGroupuser, addGroupuser, updateGroupuser, exportGroupuser } from "@/api/jiaktb/groupuser";
 
 export default {
-  name: "Carinfo",
+  name: "Groupuser",
   components: {
   },
   data() {
@@ -196,22 +176,19 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 车辆信息表格数据
-      carinfoList: [],
+      // 团体信息表格数据
+      groupuserList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
       // 状态字典
       statusOptions: [],
-      coachOptions: [],
-      driverTypeOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        carType: null,
-        carNum: null,
+        groupName: null,
         status: null,
       },
       // 表单参数
@@ -223,22 +200,16 @@ export default {
   },
   created() {
     this.getList();
-    this.getDicts("car_status").then(response => {
+    this.getDicts("group_user_status").then(response => {
       this.statusOptions = response.data;
-    });
-    listType().then(response => {
-      this.driverTypeOptions = response.rows;
-    });
-    listCoachinfo().then(response => {
-      this.coachOptions = response.rows;
     });
   },
   methods: {
-    /** 查询车辆信息列表 */
+    /** 查询团体信息列表 */
     getList() {
       this.loading = true;
-      listCarinfo(this.queryParams).then(response => {
-        this.carinfoList = response.rows;
+      listGroupuser(this.queryParams).then(response => {
+        this.groupuserList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -255,16 +226,11 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-        carInfoId: null,
-        carType: null,
-        carNum: null,
-        impDate: null,
-        expDate: null,
+        groupUserId: null,
+        groupName: null,
+        initDate: null,
         status: 0,
-        coachInfoId: null,
-        statusDate: null,
-        carValue: null,
-        num: null
+        effDate: null
       };
       this.resetForm("form");
     },
@@ -280,7 +246,7 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.carInfoId)
+      this.ids = selection.map(item => item.groupUserId)
       this.single = selection.length!==1
       this.multiple = !selection.length
     },
@@ -288,30 +254,30 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加车辆信息";
+      this.title = "添加团体信息";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const carInfoId = row.carInfoId || this.ids
-      getCarinfo(carInfoId).then(response => {
+      const groupUserId = row.groupUserId || this.ids
+      getGroupuser(groupUserId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改车辆信息";
+        this.title = "修改团体信息";
       });
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.carInfoId != null) {
-            updateCarinfo(this.form).then(response => {
+          if (this.form.groupUserId != null) {
+            updateGroupuser(this.form).then(response => {
               this.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addCarinfo(this.form).then(response => {
+            addGroupuser(this.form).then(response => {
               this.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -322,13 +288,13 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const carInfoIds = row.carInfoId || this.ids;
-      this.$confirm('是否确认删除车辆信息编号为"' + carInfoIds + '"的数据项?', "警告", {
+      const groupUserIds = row.groupUserId || this.ids;
+      this.$confirm('是否确认删除团体信息编号为"' + groupUserIds + '"的数据项?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function() {
-        return delCarinfo(carInfoIds);
+        return delGroupuser(groupUserIds);
       }).then(() => {
         this.getList();
         this.msgSuccess("删除成功");
@@ -337,12 +303,12 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有车辆信息数据项?', "警告", {
+      this.$confirm('是否确认导出所有团体信息数据项?', "警告", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       }).then(function() {
-        return exportCarinfo(queryParams);
+        return exportGroupuser(queryParams);
       }).then(response => {
         this.download(response.msg);
       })

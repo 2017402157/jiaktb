@@ -1,6 +1,10 @@
 package com.jktb.jiaktb.controller;
 
 import java.util.List;
+
+import com.jktb.jiaktb.service.IDisRuleService;
+import com.jktb.jiaktb.service.IStuInfoService;
+import com.jktb.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +36,10 @@ public class CostController extends BaseController
 {
     @Autowired
     private ICostService costService;
+    @Autowired
+    private IStuInfoService stuInfoService;
+    @Autowired
+    private IDisRuleService disRuleService;
 
     /**
      * 查询学费明细列表
@@ -42,6 +50,10 @@ public class CostController extends BaseController
     {
         startPage();
         List<Cost> list = costService.selectCostList(cost);
+        for (Cost data : list) {
+            data.setStuInfoList(stuInfoService.selectStuInfoById(data.getCarInfoId()));
+            data.setDisRuleList(disRuleService.selectDisRuleById(data.getDiscount()));
+        }
         return getDataTable(list);
     }
 

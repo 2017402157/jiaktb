@@ -88,6 +88,9 @@ public class CarInfoController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody CarInfo carInfo)
     {
+
+        carInfo.setExpDate(new Date(1100, 0, 1, 00, 00, 00));
+        carInfo.setStatusDate(new Date());
         return toAjax(carInfoService.insertCarInfo(carInfo));
     }
 
@@ -99,8 +102,8 @@ public class CarInfoController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody CarInfo carInfo)
     {
-        if (carInfo.getStatus() == 102) {
-            carInfo.setStatusDate(new Date());
+        if (carInfo.getStatus() == 102L) {
+            carInfo.setExpDate(new Date());
         }
         return toAjax(carInfoService.updateCarInfo(carInfo));
     }

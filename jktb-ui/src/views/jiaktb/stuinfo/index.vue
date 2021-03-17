@@ -209,10 +209,16 @@
         <el-form-item label="所属驾校" prop="deptId">
           <el-input v-model="form.deptId" placeholder="请输入所属驾校" />
         </el-form-item>
-        <el-form-item label="是否是本地户口(1000是，1100否)" prop="isLocal">
-          <el-input v-model="form.isLocal" placeholder="请输入是否是本地户口(1000是，1100否)" />
+        <el-form-item label="是否本地户口" prop="isLocal">
+          <el-radio-group v-model="form.isLocal">
+            <el-radio
+              v-for="dict in isLocalOptions"
+              :key="dict.dictValue"
+              :label="parseInt(dict.dictValue)"
+            >{{dict.dictLabel}}</el-radio>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item label="暂住证">
+        <el-form-item label="暂住证" v-if="form.isLocal == 1100">
           <imageUpload v-model="form.prove"/>
         </el-form-item>
         <el-form-item label="身份证正面">
@@ -253,6 +259,7 @@
 <script>
 import { listStuinfo, getStuinfo, delStuinfo, addStuinfo, updateStuinfo, exportStuinfo } from "@/api/jiaktb/stuinfo";
 import ImageUpload from '@/components/ImageUpload';
+import { listType } from "@/api/jiaktb/type";
 
 export default {
   name: "Stuinfo",
@@ -285,6 +292,7 @@ export default {
       statusCdOptions: [],
       // 申请状态字典
       appStatusOptions: [],
+      isLocalOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -311,6 +319,9 @@ export default {
     });
     this.getDicts("sys_apple").then(response => {
       this.appStatusOptions = response.data;
+    });
+    this.getDicts("is_local").then(response => {
+      this.isLocalOptions = response.data;
     });
   },
   methods: {

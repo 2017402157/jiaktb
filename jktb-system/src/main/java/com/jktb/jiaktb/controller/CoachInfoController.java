@@ -1,6 +1,10 @@
 package com.jktb.jiaktb.controller;
 
 import java.util.List;
+
+import com.jktb.jiaktb.service.IDriveTypeService;
+import com.jktb.system.service.ISysDeptService;
+import com.jktb.system.service.ISysUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +36,12 @@ public class CoachInfoController extends BaseController
 {
     @Autowired
     private ICoachInfoService coachInfoService;
+    @Autowired
+    private ISysDeptService deptService;
+    @Autowired
+    private ISysUserService userService;
+    @Autowired
+    private IDriveTypeService driveTypeService;
 
     /**
      * 查询教练信息列表
@@ -42,6 +52,11 @@ public class CoachInfoController extends BaseController
     {
         startPage();
         List<CoachInfo> list = coachInfoService.selectCoachInfoList(coachInfo);
+        for (CoachInfo data : list) {
+            data.setDeptList(deptService.selectDeptById(data.getDeptId()));
+            data.setUserList(userService.selectUserById(data.getUserId()));
+            data.setDriveTypeList(driveTypeService.selectDriveTypeById(data.getChCarType()));
+        }
         return getDataTable(list);
     }
 

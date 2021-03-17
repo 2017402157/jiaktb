@@ -160,8 +160,12 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="准驾车型" prop="chCarType">
-          <el-select v-model="form.chCarType" placeholder="请选择准驾车型">
-            <el-option label="请选择字典生成" value="" />
+          <el-select v-model="form.chCarType" placeholder="请选择准驾车型" clearable size="small">
+            <el-option v-for="item in typeOptions"
+                       :label="item.driverName"
+                       :value="item.driveTypeId"
+                       :key="item.driveTypeId"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="电话号码" prop="phone">
@@ -182,10 +186,22 @@
           <el-input v-model="form.cardId" placeholder="请输入身份证号码" />
         </el-form-item>
         <el-form-item label="所属驾校" prop="deptId">
-          <el-input v-model="form.deptId" placeholder="请输入所属驾校" />
+          <el-select v-model="form.deptId" placeholder="请绑定驾校" clearable size="small">
+            <el-option v-for="item in deptOptions"
+                       :label="item.deptName"
+                       :key="item.deptId"
+                       :value="item.deptId"
+            ></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="用户id" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户id" />
+          <el-select v-model="form.userId" placeholder="请绑定用户" clearable size="small">
+            <el-option v-for="item in userOptions"
+                       :label="item.userName"
+                       :value="item.userId"
+                       :key="item.userId"
+            ></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -198,6 +214,9 @@
 
 <script>
 import { listCoachinfo, getCoachinfo, delCoachinfo, addCoachinfo, updateCoachinfo, exportCoachinfo } from "@/api/jiaktb/coachinfo";
+import { listUser } from "@/api/system/user";
+import { listDept} from "@/api/system/dept";
+import { listType } from "@/api/jiaktb/type";
 
 export default {
   name: "Coachinfo",
@@ -227,6 +246,9 @@ export default {
       chSexOptions: [],
       // 使用状态字典
       statusOptions: [],
+      userOptions: [],
+      deptOptions: [],
+      typeOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -250,6 +272,15 @@ export default {
     });
     this.getDicts("coach_status").then(response => {
       this.statusOptions = response.data;
+    });
+    listDept().then(response => {
+      this.deptOptions = response.data;
+    });
+    listUser().then(response => {
+      this.userOptions = response.rows;
+    });
+    listType().then(response => {
+      this.typeOptions = response.rows;
     });
   },
   methods: {
