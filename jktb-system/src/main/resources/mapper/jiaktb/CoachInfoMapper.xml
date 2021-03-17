@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jktb.jiaktb.mapper.CoachInfoMapper">
+    
+    <resultMap type="CoachInfo" id="CoachInfoResult">
+        <result property="coachInfoId"    column="coach_info_id"    />
+        <result property="chName"    column="ch_name"    />
+        <result property="chAge"    column="ch_age"    />
+        <result property="chSex"    column="ch_sex"    />
+        <result property="chEvaluate"    column="ch_evaluate"    />
+        <result property="status"    column="status"    />
+        <result property="statusDate"    column="status_date"    />
+        <result property="chCarType"    column="ch_car_type"    />
+        <result property="phone"    column="phone"    />
+        <result property="salary"    column="salary"    />
+        <result property="impDate"    column="imp_date"    />
+        <result property="expDate"    column="exp_date"    />
+        <result property="cardId"    column="card_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="userId"    column="user_id"    />
+    </resultMap>
+
+    <sql id="selectCoachInfoVo">
+        select coach_info_id, ch_name, ch_age, ch_sex, ch_evaluate, status, status_date, ch_car_type, phone, salary, imp_date, exp_date, card_id, dept_id, user_id from coach_info
+    </sql>
+
+    <select id="selectCoachInfoList" parameterType="CoachInfo" resultMap="CoachInfoResult">
+        <include refid="selectCoachInfoVo"/>
+        <where>  
+            <if test="chName != null  and chName != ''"> and ch_name like concat('%', #{chName}, '%')</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+    
+    <select id="selectCoachInfoById" parameterType="Long" resultMap="CoachInfoResult">
+        <include refid="selectCoachInfoVo"/>
+        where coach_info_id = #{coachInfoId}
+    </select>
+        
+    <insert id="insertCoachInfo" parameterType="CoachInfo" useGeneratedKeys="true" keyProperty="coachInfoId">
+        insert into coach_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="chName != null">ch_name,</if>
+            <if test="chAge != null">ch_age,</if>
+            <if test="chSex != null">ch_sex,</if>
+            <if test="chEvaluate != null">ch_evaluate,</if>
+            <if test="status != null">status,</if>
+            <if test="statusDate != null">status_date,</if>
+            <if test="chCarType != null">ch_car_type,</if>
+            <if test="phone != null">phone,</if>
+            <if test="salary != null">salary,</if>
+            <if test="impDate != null">imp_date,</if>
+            <if test="expDate != null">exp_date,</if>
+            <if test="cardId != null">card_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="userId != null">user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="chName != null">#{chName},</if>
+            <if test="chAge != null">#{chAge},</if>
+            <if test="chSex != null">#{chSex},</if>
+            <if test="chEvaluate != null">#{chEvaluate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="statusDate != null">#{statusDate},</if>
+            <if test="chCarType != null">#{chCarType},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="salary != null">#{salary},</if>
+            <if test="impDate != null">#{impDate},</if>
+            <if test="expDate != null">#{expDate},</if>
+            <if test="cardId != null">#{cardId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="userId != null">#{userId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCoachInfo" parameterType="CoachInfo">
+        update coach_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="chName != null">ch_name = #{chName},</if>
+            <if test="chAge != null">ch_age = #{chAge},</if>
+            <if test="chSex != null">ch_sex = #{chSex},</if>
+            <if test="chEvaluate != null">ch_evaluate = #{chEvaluate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="statusDate != null">status_date = #{statusDate},</if>
+            <if test="chCarType != null">ch_car_type = #{chCarType},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="salary != null">salary = #{salary},</if>
+            <if test="impDate != null">imp_date = #{impDate},</if>
+            <if test="expDate != null">exp_date = #{expDate},</if>
+            <if test="cardId != null">card_id = #{cardId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+        </trim>
+        where coach_info_id = #{coachInfoId}
+    </update>
+
+    <delete id="deleteCoachInfoById" parameterType="Long">
+        delete from coach_info where coach_info_id = #{coachInfoId}
+    </delete>
+
+    <delete id="deleteCoachInfoByIds" parameterType="String">
+        delete from coach_info where coach_info_id in 
+        <foreach item="coachInfoId" collection="array" open="(" separator="," close=")">
+            #{coachInfoId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jktb.jiaktb.mapper.CarPhotoMapper">
+    
+    <resultMap type="CarPhoto" id="CarPhotoResult">
+        <result property="carPhotoId"    column="car_photo_id"    />
+        <result property="carInfoId"    column="car_info_id"    />
+        <result property="photosId"    column="photos_id"    />
+    </resultMap>
+
+    <sql id="selectCarPhotoVo">
+        select car_photo_id, car_info_id, photos_id from car_photo
+    </sql>
+
+    <select id="selectCarPhotoList" parameterType="CarPhoto" resultMap="CarPhotoResult">
+        <include refid="selectCarPhotoVo"/>
+        <where>  
+            <if test="carInfoId != null "> and car_info_id = #{carInfoId}</if>
+            <if test="photosId != null "> and photos_id = #{photosId}</if>
+        </where>
+    </select>
+    
+    <select id="selectCarPhotoById" parameterType="Long" resultMap="CarPhotoResult">
+        <include refid="selectCarPhotoVo"/>
+        where car_photo_id = #{carPhotoId}
+    </select>
+        
+    <insert id="insertCarPhoto" parameterType="CarPhoto" useGeneratedKeys="true" keyProperty="carPhotoId">
+        insert into car_photo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="carInfoId != null">car_info_id,</if>
+            <if test="photosId != null">photos_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="carInfoId != null">#{carInfoId},</if>
+            <if test="photosId != null">#{photosId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCarPhoto" parameterType="CarPhoto">
+        update car_photo
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="carInfoId != null">car_info_id = #{carInfoId},</if>
+            <if test="photosId != null">photos_id = #{photosId},</if>
+        </trim>
+        where car_photo_id = #{carPhotoId}
+    </update>
+
+    <delete id="deleteCarPhotoById" parameterType="Long">
+        delete from car_photo where car_photo_id = #{carPhotoId}
+    </delete>
+
+    <delete id="deleteCarPhotoByIds" parameterType="String">
+        delete from car_photo where car_photo_id in 
+        <foreach item="carPhotoId" collection="array" open="(" separator="," close=")">
+            #{carPhotoId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jktb.jiaktb.mapper.DisRuleMapper">
+    
+    <resultMap type="DisRule" id="DisRuleResult">
+        <result property="disRuleId"    column="dis_rule_id"    />
+        <result property="disName"    column="dis_name"    />
+        <result property="disBrief"    column="dis_brief"    />
+        <result property="disRu"    column="dis_ru"    />
+        <result property="disPhoto"    column="dis_photo"    />
+        <result property="impDate"    column="imp_date"    />
+        <result property="expDate"    column="exp_date"    />
+        <result property="userNum"    column="user_num"    />
+        <result property="status"    column="status"    />
+        <result property="statusDate"    column="status_date"    />
+    </resultMap>
+
+    <sql id="selectDisRuleVo">
+        select dis_rule_id, dis_name, dis_brief, dis_ru, dis_photo, imp_date, exp_date, user_num, status, status_date from dis_rule
+    </sql>
+
+    <select id="selectDisRuleList" parameterType="DisRule" resultMap="DisRuleResult">
+        <include refid="selectDisRuleVo"/>
+        <where>  
+            <if test="disName != null  and disName != ''"> and dis_name like concat('%', #{disName}, '%')</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectDisRuleById" parameterType="Long" resultMap="DisRuleResult">
+        <include refid="selectDisRuleVo"/>
+        where dis_rule_id = #{disRuleId}
+    </select>
+        
+    <insert id="insertDisRule" parameterType="DisRule" useGeneratedKeys="true" keyProperty="disRuleId">
+        insert into dis_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="disName != null">dis_name,</if>
+            <if test="disBrief != null">dis_brief,</if>
+            <if test="disRu != null">dis_ru,</if>
+            <if test="disPhoto != null">dis_photo,</if>
+            <if test="impDate != null">imp_date,</if>
+            <if test="expDate != null">exp_date,</if>
+            <if test="userNum != null">user_num,</if>
+            <if test="status != null">status,</if>
+            <if test="statusDate != null">status_date,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="disName != null">#{disName},</if>
+            <if test="disBrief != null">#{disBrief},</if>
+            <if test="disRu != null">#{disRu},</if>
+            <if test="disPhoto != null">#{disPhoto},</if>
+            <if test="impDate != null">#{impDate},</if>
+            <if test="expDate != null">#{expDate},</if>
+            <if test="userNum != null">#{userNum},</if>
+            <if test="status != null">#{status},</if>
+            <if test="statusDate != null">#{statusDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDisRule" parameterType="DisRule">
+        update dis_rule
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="disName != null">dis_name = #{disName},</if>
+            <if test="disBrief != null">dis_brief = #{disBrief},</if>
+            <if test="disRu != null">dis_ru = #{disRu},</if>
+            <if test="disPhoto != null">dis_photo = #{disPhoto},</if>
+            <if test="impDate != null">imp_date = #{impDate},</if>
+            <if test="expDate != null">exp_date = #{expDate},</if>
+            <if test="userNum != null">user_num = #{userNum},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="statusDate != null">status_date = #{statusDate},</if>
+        </trim>
+        where dis_rule_id = #{disRuleId}
+    </update>
+
+    <delete id="deleteDisRuleById" parameterType="Long">
+        delete from dis_rule where dis_rule_id = #{disRuleId}
+    </delete>
+
+    <delete id="deleteDisRuleByIds" parameterType="String">
+        delete from dis_rule where dis_rule_id in 
+        <foreach item="disRuleId" collection="array" open="(" separator="," close=")">
+            #{disRuleId}
+        </foreach>
+    </delete>
+</mapper>

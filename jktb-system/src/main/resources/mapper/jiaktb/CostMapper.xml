@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jktb.jiaktb.mapper.CostMapper">
+    
+    <resultMap type="Cost" id="CostResult">
+        <result property="costId"    column="cost_id"    />
+        <result property="carInfoId"    column="car_info_id"    />
+        <result property="costName"    column="cost_name"    />
+        <result property="costNum"    column="cost_num"    />
+        <result property="discount"    column="discount"    />
+        <result property="feeCostNum"    column="fee_cost_num"    />
+        <result property="remarks"    column="remarks"    />
+    </resultMap>
+
+    <sql id="selectCostVo">
+        select cost_id, car_info_id, cost_name, cost_num, discount, fee_cost_num, remarks from cost
+    </sql>
+
+    <select id="selectCostList" parameterType="Cost" resultMap="CostResult">
+        <include refid="selectCostVo"/>
+        <where>  
+            <if test="costName != null  and costName != ''"> and cost_name like concat('%', #{costName}, '%')</if>
+            <if test="costNum != null "> and cost_num = #{costNum}</if>
+        </where>
+    </select>
+    
+    <select id="selectCostById" parameterType="Long" resultMap="CostResult">
+        <include refid="selectCostVo"/>
+        where cost_id = #{costId}
+    </select>
+        
+    <insert id="insertCost" parameterType="Cost" useGeneratedKeys="true" keyProperty="costId">
+        insert into cost
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="carInfoId != null">car_info_id,</if>
+            <if test="costName != null">cost_name,</if>
+            <if test="costNum != null">cost_num,</if>
+            <if test="discount != null">discount,</if>
+            <if test="feeCostNum != null">fee_cost_num,</if>
+            <if test="remarks != null">remarks,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="carInfoId != null">#{carInfoId},</if>
+            <if test="costName != null">#{costName},</if>
+            <if test="costNum != null">#{costNum},</if>
+            <if test="discount != null">#{discount},</if>
+            <if test="feeCostNum != null">#{feeCostNum},</if>
+            <if test="remarks != null">#{remarks},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCost" parameterType="Cost">
+        update cost
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="carInfoId != null">car_info_id = #{carInfoId},</if>
+            <if test="costName != null">cost_name = #{costName},</if>
+            <if test="costNum != null">cost_num = #{costNum},</if>
+            <if test="discount != null">discount = #{discount},</if>
+            <if test="feeCostNum != null">fee_cost_num = #{feeCostNum},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+        </trim>
+        where cost_id = #{costId}
+    </update>
+
+    <delete id="deleteCostById" parameterType="Long">
+        delete from cost where cost_id = #{costId}
+    </delete>
+
+    <delete id="deleteCostByIds" parameterType="String">
+        delete from cost where cost_id in 
+        <foreach item="costId" collection="array" open="(" separator="," close=")">
+            #{costId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jktb.jiaktb.mapper.StuInfoMapper">
+    
+    <resultMap type="StuInfo" id="StuInfoResult">
+        <result property="stuInfoId"    column="stu_info_id"    />
+        <result property="stuName"    column="stu_name"    />
+        <result property="cardId"    column="card_id"    />
+        <result property="sex"    column="sex"    />
+        <result property="chCarType"    column="ch_car_type"    />
+        <result property="appCarType"    column="app_car_type"    />
+        <result property="rigthEye"    column="rigth_eye"    />
+        <result property="leftEye"    column="left_eye"    />
+        <result property="addr"    column="addr"    />
+        <result property="phone"    column="phone"    />
+        <result property="statusCd"    column="status_cd"    />
+        <result property="impDate"    column="imp_date"    />
+        <result property="expDate"    column="exp_date"    />
+        <result property="coachInfoId"    column="coach_info_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="isLocal"    column="is_local"    />
+        <result property="prove"    column="prove"    />
+        <result property="zCard"    column="z_card"    />
+        <result property="fCard"    column="f_card"    />
+        <result property="groupUserId"    column="group_user_id"    />
+        <result property="appStatus"    column="app_status"    />
+        <result property="appStatusTime"    column="app_status_time"    />
+    </resultMap>
+
+    <sql id="selectStuInfoVo">
+        select stu_info_id, stu_name, card_id, sex, ch_car_type, app_car_type, rigth_eye, left_eye, addr, phone, status_cd, imp_date, exp_date, coach_info_id, dept_id, is_local, prove, z_card, f_card, group_user_id, app_status, app_status_time from stu_info
+    </sql>
+
+    <select id="selectStuInfoList" parameterType="StuInfo" resultMap="StuInfoResult">
+        <include refid="selectStuInfoVo"/>
+        <where>  
+            <if test="stuName != null  and stuName != ''"> and stu_name like concat('%', #{stuName}, '%')</if>
+            <if test="statusCd != null "> and status_cd = #{statusCd}</if>
+            <if test="coachInfoId != null  and coachInfoId != ''"> and coach_info_id = #{coachInfoId}</if>
+            <if test="groupUserId != null "> and group_user_id = #{groupUserId}</if>
+        </where>
+    </select>
+    
+    <select id="selectStuInfoById" parameterType="Long" resultMap="StuInfoResult">
+        <include refid="selectStuInfoVo"/>
+        where stu_info_id = #{stuInfoId}
+    </select>
+        
+    <insert id="insertStuInfo" parameterType="StuInfo" useGeneratedKeys="true" keyProperty="stuInfoId">
+        insert into stu_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stuName != null">stu_name,</if>
+            <if test="cardId != null">card_id,</if>
+            <if test="sex != null">sex,</if>
+            <if test="chCarType != null">ch_car_type,</if>
+            <if test="appCarType != null">app_car_type,</if>
+            <if test="rigthEye != null">rigth_eye,</if>
+            <if test="leftEye != null">left_eye,</if>
+            <if test="addr != null">addr,</if>
+            <if test="phone != null">phone,</if>
+            <if test="statusCd != null">status_cd,</if>
+            <if test="impDate != null">imp_date,</if>
+            <if test="expDate != null">exp_date,</if>
+            <if test="coachInfoId != null">coach_info_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="isLocal != null">is_local,</if>
+            <if test="prove != null">prove,</if>
+            <if test="zCard != null">z_card,</if>
+            <if test="fCard != null">f_card,</if>
+            <if test="groupUserId != null">group_user_id,</if>
+            <if test="appStatus != null">app_status,</if>
+            <if test="appStatusTime != null">app_status_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stuName != null">#{stuName},</if>
+            <if test="cardId != null">#{cardId},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="chCarType != null">#{chCarType},</if>
+            <if test="appCarType != null">#{appCarType},</if>
+            <if test="rigthEye != null">#{rigthEye},</if>
+            <if test="leftEye != null">#{leftEye},</if>
+            <if test="addr != null">#{addr},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="statusCd != null">#{statusCd},</if>
+            <if test="impDate != null">#{impDate},</if>
+            <if test="expDate != null">#{expDate},</if>
+            <if test="coachInfoId != null">#{coachInfoId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="isLocal != null">#{isLocal},</if>
+            <if test="prove != null">#{prove},</if>
+            <if test="zCard != null">#{zCard},</if>
+            <if test="fCard != null">#{fCard},</if>
+            <if test="groupUserId != null">#{groupUserId},</if>
+            <if test="appStatus != null">#{appStatus},</if>
+            <if test="appStatusTime != null">#{appStatusTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStuInfo" parameterType="StuInfo">
+        update stu_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stuName != null">stu_name = #{stuName},</if>
+            <if test="cardId != null">card_id = #{cardId},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="chCarType != null">ch_car_type = #{chCarType},</if>
+            <if test="appCarType != null">app_car_type = #{appCarType},</if>
+            <if test="rigthEye != null">rigth_eye = #{rigthEye},</if>
+            <if test="leftEye != null">left_eye = #{leftEye},</if>
+            <if test="addr != null">addr = #{addr},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="statusCd != null">status_cd = #{statusCd},</if>
+            <if test="impDate != null">imp_date = #{impDate},</if>
+            <if test="expDate != null">exp_date = #{expDate},</if>
+            <if test="coachInfoId != null">coach_info_id = #{coachInfoId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="isLocal != null">is_local = #{isLocal},</if>
+            <if test="prove != null">prove = #{prove},</if>
+            <if test="zCard != null">z_card = #{zCard},</if>
+            <if test="fCard != null">f_card = #{fCard},</if>
+            <if test="groupUserId != null">group_user_id = #{groupUserId},</if>
+            <if test="appStatus != null">app_status = #{appStatus},</if>
+            <if test="appStatusTime != null">app_status_time = #{appStatusTime},</if>
+        </trim>
+        where stu_info_id = #{stuInfoId}
+    </update>
+
+    <delete id="deleteStuInfoById" parameterType="Long">
+        delete from stu_info where stu_info_id = #{stuInfoId}
+    </delete>
+
+    <delete id="deleteStuInfoByIds" parameterType="String">
+        delete from stu_info where stu_info_id in 
+        <foreach item="stuInfoId" collection="array" open="(" separator="," close=")">
+            #{stuInfoId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jktb.jiaktb.mapper.DriveTypeMapper">
+    
+    <resultMap type="DriveType" id="DriveTypeResult">
+        <result property="driveTypeId"    column="drive_type_id"    />
+        <result property="driverName"    column="driver_name"    />
+        <result property="driverCode"    column="driver_code"    />
+        <result property="driverDes"    column="driver_des"    />
+    </resultMap>
+
+    <sql id="selectDriveTypeVo">
+        select drive_type_id, driver_name, driver_code, driver_des from drive_type
+    </sql>
+
+    <select id="selectDriveTypeList" parameterType="DriveType" resultMap="DriveTypeResult">
+        <include refid="selectDriveTypeVo"/>
+        <where>  
+            <if test="driverName != null  and driverName != ''"> and driver_name like concat('%', #{driverName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectDriveTypeById" parameterType="Long" resultMap="DriveTypeResult">
+        <include refid="selectDriveTypeVo"/>
+        where drive_type_id = #{driveTypeId}
+    </select>
+        
+    <insert id="insertDriveType" parameterType="DriveType" useGeneratedKeys="true" keyProperty="driveTypeId">
+        insert into drive_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="driverName != null">driver_name,</if>
+            <if test="driverCode != null">driver_code,</if>
+            <if test="driverDes != null">driver_des,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="driverName != null">#{driverName},</if>
+            <if test="driverCode != null">#{driverCode},</if>
+            <if test="driverDes != null">#{driverDes},</if>
+         </trim>
+    </insert>
+
+    <update id="updateDriveType" parameterType="DriveType">
+        update drive_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="driverName != null">driver_name = #{driverName},</if>
+            <if test="driverCode != null">driver_code = #{driverCode},</if>
+            <if test="driverDes != null">driver_des = #{driverDes},</if>
+        </trim>
+        where drive_type_id = #{driveTypeId}
+    </update>
+
+    <delete id="deleteDriveTypeById" parameterType="Long">
+        delete from drive_type where drive_type_id = #{driveTypeId}
+    </delete>
+
+    <delete id="deleteDriveTypeByIds" parameterType="String">
+        delete from drive_type where drive_type_id in 
+        <foreach item="driveTypeId" collection="array" open="(" separator="," close=")">
+            #{driveTypeId}
+        </foreach>
+    </delete>
+</mapper>
