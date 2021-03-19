@@ -2,12 +2,13 @@ package com.jktb.jiaktb.service;
 
 import java.util.List;
 import com.jktb.jiaktb.domain.CarPhoto;
+import com.jktb.jiaktb.domain.Photos;
 
 /**
  * 车辆图片Service接口
  * 
  * @author jktb
- * @date 2021-03-15
+ * @date 2021-03-18
  */
 public interface ICarPhotoService 
 {
@@ -17,7 +18,7 @@ public interface ICarPhotoService
      * @param carPhotoId 车辆图片ID
      * @return 车辆图片
      */
-    public CarPhoto selectCarPhotoById(Long carPhotoId);
+    public List<CarPhoto> selectCarPhotoById(Long carPhotoId);
 
     /**
      * 查询车辆图片列表

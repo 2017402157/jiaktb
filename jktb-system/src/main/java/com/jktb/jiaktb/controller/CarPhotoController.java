@@ -1,6 +1,8 @@
 package com.jktb.jiaktb.controller;
 
 import java.util.List;
+
+import com.jktb.jiaktb.service.IPhotosService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +26,7 @@ import com.jktb.common.core.page.TableDataInfo;
  * 车辆图片Controller
  * 
  * @author jktb
- * @date 2021-03-15
+ * @date 2021-03-18
  */
 @RestController
 @RequestMapping("/jiaktb/carphoto")
@@ -32,6 +34,8 @@ public class CarPhotoController extends BaseController
 {
     @Autowired
     private ICarPhotoService carPhotoService;
+    @Autowired
+    private IPhotosService photosService;
 
     /**
      * 查询车辆图片列表

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jktb.jiaktb.mapper.PhotosMapper">
+    
+    <resultMap type="Photos" id="PhotosResult">
+        <result property="photosId"    column="photos_id"    />
+        <result property="photosTitle"    column="photos_title"    />
+        <result property="photosUri"    column="photos_uri"    />
+        <result property="upTime"    column="up_time"    />
+    </resultMap>
+
+    <sql id="selectPhotosVo">
+        select photos_id, photos_title, photos_uri, up_time from photos
+    </sql>
+
+    <select id="selectPhotosList" parameterType="Photos" resultMap="PhotosResult">
+        <include refid="selectPhotosVo"/>
+        <where>  
+            <if test="photosTitle != null  and photosTitle != ''"> and photos_title = #{photosTitle}</if>
+        </where>
+    </select>
+    <select id="selectPhotosByCarInfoId" parameterType="Long" resultMap="PhotosResult">
+        select b.photos_id, b.photos_title, b.photos_uri, b.up_time
+        from car_photo a
+                 left join photos b on b.photos_id = a.photos_id
+        where a.car_info_id = #{carInfoId}
+    </select>
+    
+    <select id="selectPhotosById" parameterType="Long" resultMap="PhotosResult">
+        <include refid="selectPhotosVo"/>
+        where photos_id = #{photosId}
+    </select>
+        
+    <insert id="insertPhotos" parameterType="Photos" useGeneratedKeys="true" keyProperty="photosId">
+        insert into photos
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="photosTitle != null">photos_title,</if>
+            <if test="photosUri != null">photos_uri,</if>
+            <if test="upTime != null">up_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="photosTitle != null">#{photosTitle},</if>
+            <if test="photosUri != null">#{photosUri},</if>
+            <if test="upTime != null">#{upTime},</if>
+         </trim>
+    </insert>
+
+    <insert id="batchPhotos">
+        insert into photos( photos_id, photos_title, photos_uri, up_time) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.photosId}, #{item.photosTitle}, #{item.photosUri}, sysdate())
+        </foreach>
+    </insert>
+
+    <update id="updatePhotos" parameterType="Photos">
+        update photos
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="photosTitle != null">photos_title = #{photosTitle},</if>
+            <if test="photosUri != null">photos_uri = #{photosUri},</if>
+            <if test="upTime != null">up_time = #{upTime},</if>
+        </trim>
+        where photos_id = #{photosId}
+    </update>
+
+    <delete id="deletePhotosById" parameterType="Long">
+        delete from photos where photos_id = #{photosId}
+    </delete>
+
+    <delete id="deletePhotosByIds" parameterType="String">
+        delete from photos where photos_id in 
+        <foreach item="photosId" collection="array" open="(" separator="," close=")">
+            #{photosId}
+        </foreach>
+    </delete>
+
+</mapper>

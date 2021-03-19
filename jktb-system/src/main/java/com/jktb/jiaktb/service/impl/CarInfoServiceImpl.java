@@ -1,6 +1,15 @@
 package com.jktb.jiaktb.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import com.jktb.common.utils.StringUtils;
+import com.jktb.common.utils.uuid.IdUtils;
+import com.jktb.jiaktb.domain.CarPhoto;
+import com.jktb.jiaktb.domain.Photos;
+import com.jktb.jiaktb.mapper.CarPhotoMapper;
+import com.jktb.jiaktb.mapper.PhotosMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.jktb.jiaktb.mapper.CarInfoMapper;
@@ -18,6 +27,10 @@ public class CarInfoServiceImpl implements ICarInfoService
 {
     @Autowired
     private CarInfoMapper carInfoMapper;
+    @Autowired
+    private CarPhotoMapper carPhotoMapper;
+    @Autowired
+    private PhotosMapper photosMapper;
 
     /**
      * 查询车辆信息
@@ -28,7 +41,13 @@ public class CarInfoServiceImpl implements ICarInfoService
     @Override
     public CarInfo selectCarInfoById(Long carInfoId)
     {
-        return carInfoMapper.selectCarInfoById(carInfoId);
+
+        CarInfo carInfo = carInfoMapper.selectCarInfoById(carInfoId);
+        List<Photos> photosList = photosMapper.selectPhotosByCarInfoId(carInfoId);
+        if (photosList.size() > 0) {
+            carInfo.setPhotosList(photosList);
+        }
+        return carInfo;
     }
 
     /**
@@ -52,7 +71,31 @@ public class CarInfoServiceImpl implements ICarInfoService
     @Override
     public int insertCarInfo(CarInfo carInfo)
     {
-        return carInfoMapper.insertCarInfo(carInfo);
+        int rows = carInfoMapper.insertCarInfo(carInfo);
+        List<Photos> photosList = carInfo.getPhotosList();
+        for (Photos photos : photosList) {
+            photos.setPhotosId(IdUtils.getID());
+        }
+        photosMapper.batchPhotos(photosList);
+        insertCarPhoto(carInfo);
+        return rows;
+    }
+
+
+    private void insertCarPhoto(CarInfo carInfo) {
+        List<Photos> photosList = carInfo.getPhotosList();
+        if (photosList.size() > 0) {
+            List<CarPhoto> carPhotoList = new ArrayList<>();
+            for (Photos photo : photosList) {
+                CarPhoto carPhoto = new CarPhoto();
+                carPhoto.setPhotosId(photo.getPhotosId());
+                carPhoto.setCarInfoId(carInfo.getCarInfoId());
+                carPhotoList.add(carPhoto);
+            }
+            if (carPhotoList.size() >0 ) {
+                carPhotoMapper.batchCarPhotos(carPhotoList);
+            }
+        }
     }
 
     /**
@@ -64,6 +107,22 @@ public class CarInfoServiceImpl implements ICarInfoService
     @Override
     public int updateCarInfo(CarInfo carInfo)
     {
+        List<CarPhoto> carPhotoList = carPhotoMapper.selectCarPhotoById(carInfo.getCarInfoId());
+        if (carPhotoList.size() > 0) {
+            for (CarPhoto photoId : carPhotoList) {
+                photosMapper.deletePhotosById(photoId.getPhotosId());
+            }
+        }
+        if (!"".equals(carInfo.getCarInfoId()) && carInfo.getCarInfoId() != null) {
+            carPhotoMapper.deleteCarPhotoByCarInfoId(carInfo.getCarInfoId());
+        }
+        List<Photos> photosList = carInfo.getPhotosList();
+        for (Photos photos : photosList) {
+            Long id = IdUtils.getID();
+            photos.setPhotosId(id);
+        }
+        photosMapper.batchPhotos(photosList);
+        insertCarPhoto(carInfo);
         return carInfoMapper.updateCarInfo(carInfo);
     }
 
@@ -76,6 +135,15 @@ public class CarInfoServiceImpl implements ICarInfoService
     @Override
     public int deleteCarInfoByIds(Long[] carInfoIds)
     {
+        for (Long carInfoId : carInfoIds) {
+            List<CarPhoto> carPhotoList = carPhotoMapper.selectCarPhotoById(carInfoId);
+            carPhotoMapper.deleteCarPhotoByCarInfoId(carInfoId);
+            if (carPhotoList.size() > 0) {
+                for (CarPhoto photoId : carPhotoList) {
+                    photosMapper.deletePhotosById(photoId.getPhotosId());
+                }
+            }
+        }
         return carInfoMapper.deleteCarInfoByIds(carInfoIds);
     }
 
@@ -88,6 +156,13 @@ public class CarInfoServiceImpl implements ICarInfoService
     @Override
     public int deleteCarInfoById(Long carInfoId)
     {
+        List<CarPhoto> carPhotoList = carPhotoMapper.selectCarPhotoById(carInfoId);
+        carPhotoMapper.deleteCarPhotoByCarInfoId(carInfoId);
+        if (carPhotoList.size() > 0) {
+            for (CarPhoto photoId : carPhotoList) {
+                photosMapper.deletePhotosById(photoId.getPhotosId());
+            }
+        }
         return carInfoMapper.deleteCarInfoById(carInfoId);
     }
 }

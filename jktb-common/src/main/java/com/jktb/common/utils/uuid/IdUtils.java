@@ -48,4 +48,10 @@ public class IdUtils
     {
         return UUID.fastUUID().toString(true);
     }
+
+    public static Long getID() {
+        int i = java.util.UUID.randomUUID().hashCode();
+        i=i < 0 ? -i : i;
+        return Long.valueOf(i);
+    }
 }

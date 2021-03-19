@@ -98,9 +98,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="intro != null and intro != ''">intro,</if>
  			<if test="status != null">status,</if>
  			<if test="createBy != null and createBy != ''">create_by,</if>
- 			create_time
 			<if test="aStatus != null and aStatus != ''">a_status,</if>
-			<if test="aStatusTime != null and aStatusTime != ''">a_status_time,</if>
+			a_status_time,
+			create_time
  		)values(
  			<if test="deptId != null and deptId != 0">#{deptId},</if>
  			<if test="parentId != null and parentId != 0">#{parentId},</if>
@@ -113,8 +113,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="intro != null and intro != ''">#{intro},</if>
  			<if test="status != null">#{status},</if>
  			<if test="createBy != null and createBy != ''">#{createBy},</if>
-			<if test="aStatus != null and aStatus != ''">#{a_status},</if>
-			<if test="aStatusTime != null and aStatusTime != ''">#{a_status_time},</if>
+			<if test="aStatus != null and aStatus != ''">#{aStatus},</if>
+			#{aStatusTime},
+ 		    sysdate()
  		)
 	</insert>
 	

@@ -1,6 +1,8 @@
 package com.jktb.jiaktb.domain;
 
 import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -52,6 +54,10 @@ public class CarInfo extends BaseEntity
     /** 用车总人数 */
     @Excel(name = "用车总人数")
     private Long num;
+
+    private Long[] photoIds;
+
+    private List<Photos> photosList;
 
     private DriveType driveTypeList;
 
@@ -162,6 +168,22 @@ public class CarInfo extends BaseEntity
 
     public void setCoachInfoList(CoachInfo coachInfoList) {
         this.coachInfoList = coachInfoList;
+    }
+
+    public Long[] getPhotoIds() {
+        return photoIds;
+    }
+
+    public void setPhotoIds(Long[] photoIds) {
+        this.photoIds = photoIds;
+    }
+
+    public List<Photos> getPhotosList() {
+        return photosList;
+    }
+
+    public void setPhotosList(List<Photos> photosList) {
+        this.photosList = photosList;
     }
 
     @Override

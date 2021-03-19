@@ -164,6 +164,30 @@
         <el-form-item label="用车总人数" prop="num">
           <el-input v-model="form.num" placeholder="请输入用车总人数" />
         </el-form-item>
+
+        <el-divider content-position="center">图片信息</el-divider>
+        <el-row :gutter="10" class="mb8">
+          <el-col :span="1.5">
+            <el-button type="primary" icon="el-icon-plus" size="mini" @click="handleAddPhotos">添加</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDeletePhotos">删除</el-button>
+          </el-col>
+        </el-row>
+        <el-table :data="photosList" :row-class-name="rowPhotosIndex" @selection-change="handlePhotosSelectionChange" ref="photos">
+          <el-table-column type="selection" width="50" align="center" />
+          <el-table-column label="序号" align="center" prop="index" width="50"/>
+          <el-table-column label="图片标题" prop="photosTitle">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.photosTitle" placeholder="请输入图片标题" />
+            </template>
+          </el-table-column>
+          <el-table-column label="图片" prop="photosUri">
+            <template slot-scope="scope">
+              <imageUpload v-model="scope.row.photosUri"/>
+            </template>
+          </el-table-column>
+        </el-table>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -177,13 +201,20 @@
 import { listCarinfo, getCarinfo, delCarinfo, addCarinfo, updateCarinfo, exportCarinfo } from "@/api/jiaktb/carinfo";
 import { listType } from "@/api/jiaktb/type";
 import { listCoachinfo} from "@/api/jiaktb/coachinfo";
+import ImageUpload from '@/components/ImageUpload';
+import {getToken} from "@/utils/auth";
 
 export default {
   name: "Carinfo",
   components: {
+    ImageUpload
   },
   data() {
     return {
+      uploadImgUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传的图片服务器地址
+      headers: {
+        Authorization: "Bearer " + getToken(),
+      },
       // 遮罩层
       loading: true,
       // 选中数组
@@ -198,6 +229,8 @@ export default {
       total: 0,
       // 车辆信息表格数据
       carinfoList: [],
+      // 图片信息表格数据
+      photosList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -266,6 +299,7 @@ export default {
         carValue: null,
         num: null
       };
+      this.photosList = [];
       this.resetForm("form");
     },
     /** 搜索按钮操作 */
@@ -296,6 +330,8 @@ export default {
       const carInfoId = row.carInfoId || this.ids
       getCarinfo(carInfoId).then(response => {
         this.form = response.data;
+        console.log(this.form);
+        this.photosList = response.data.photosList;
         this.open = true;
         this.title = "修改车辆信息";
       });
@@ -304,6 +340,7 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          this.form.photosList = this.photosList;
           if (this.form.carInfoId != null) {
             updateCarinfo(this.form).then(response => {
               this.msgSuccess("修改成功");
@@ -346,7 +383,36 @@ export default {
       }).then(response => {
         this.download(response.msg);
       })
-    }
+    },
+    /** 图片信息序号 */
+    rowPhotosIndex({ row, rowIndex }) {
+      row.index = rowIndex + 1;
+    },
+    /** 图片信息添加按钮操作 */
+    handleAddPhotos() {
+      let obj = {};
+      obj.photosTitle = "";
+      obj.photosUri = "";
+      obj.upTime = "";
+      this.photosList.push(obj);
+    },
+    /** 图片信息删除按钮操作 */
+    handleDeletePhotos() {
+      if (this.checkedPhotos.length == 0) {
+        this.$alert("请先选择要删除的图片信息数据", "提示", { confirmButtonText: "确定", });
+      } else {
+        this.photosList.splice(this.checkedPhotos[0].index - 1, 1);
+      }
+    },
+    /** 单选框选中数据 */
+    handlePhotosSelectionChange(selection) {
+      if (selection.length > 1) {
+        this.$refs.photos.clearSelection();
+        this.$refs.photos.toggleRowSelection(selection.pop());
+      } else {
+        this.checkedPhotos = selection;
+      }
+    },
   }
 };
 </script>

@@ -10,6 +10,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="photosId"    column="photos_id"    />
     </resultMap>
 
+    <resultMap id="CarPhotoPhotosResult" type="CarPhoto" extends="CarPhotoResult">
+        <collection property="photosList" notNullColumn="photos_id" javaType="java.util.List" resultMap="PhotosResult" />
+    </resultMap>
+
+    <resultMap type="Photos" id="PhotosResult">
+        <result property="photosId"    column="photos_id"    />
+        <result property="photosTitle"    column="photos_title"    />
+        <result property="photosUri"    column="photos_uri"    />
+        <result property="upTime"    column="up_time"    />
+    </resultMap>
+
     <sql id="selectCarPhotoVo">
         select car_photo_id, car_info_id, photos_id from car_photo
     </sql>
@@ -18,13 +29,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectCarPhotoVo"/>
         <where>  
             <if test="carInfoId != null "> and car_info_id = #{carInfoId}</if>
-            <if test="photosId != null "> and photos_id = #{photosId}</if>
         </where>
     </select>
     
     <select id="selectCarPhotoById" parameterType="Long" resultMap="CarPhotoResult">
-        <include refid="selectCarPhotoVo"/>
-        where car_photo_id = #{carPhotoId}
+        select a.car_photo_id, a.car_info_id, a.photos_id
+        from car_photo a
+        where a.car_info_id = #{carInfoId}
     </select>
         
     <insert id="insertCarPhoto" parameterType="CarPhoto" useGeneratedKeys="true" keyProperty="carPhotoId">
@@ -58,4 +69,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{carPhotoId}
         </foreach>
     </delete>
+
+    <delete id="deleteCarPhotoByCarInfoId" parameterType="Long">
+        delete from car_photo where car_info_id = #{carInfoId}
+
+    </delete>
+
+    <delete id="deletePhotosByPhotosId" parameterType="Long">
+        delete from photos where photos_id = #{photosId}
+    </delete>
+
+    <insert id="batchCarPhotos">
+        insert into car_photo(car_info_id, photos_id) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            ( #{item.carInfoId}, #{item.photosId})
+        </foreach>
+    </insert>
 </mapper>
